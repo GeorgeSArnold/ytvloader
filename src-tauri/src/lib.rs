@@ -4,7 +4,7 @@ use url::Url;
 use serde_json::json;
 use dirs;
 
-// fetch > json 
+// fetch 
 pub async fn fetch_video(url: &str) -> Result<String, String> {
     println!("Attempting to fetch video info from URL: {}", url);
     
@@ -19,6 +19,23 @@ pub async fn fetch_video(url: &str) -> Result<String, String> {
         let video_info: serde_json::Value = serde_json::from_str(&json_output)
             .map_err(|e| format!("Error parsing JSON output: {}", e))?;
 
+        // Debug: Print the raw JSON output
+        //println!("Raw JSON output: {}", json_output);
+
+        // Try to get filesize from different possible fields
+        let filesize_bytes = video_info["filesize"]
+            .as_f64()
+            .or_else(|| video_info["filesize_approx"].as_f64())
+            .or_else(|| {
+                // If filesize is not available, try to calculate from bitrate and duration
+                let bitrate = video_info["tbr"].as_f64()?;
+                let duration = video_info["duration"].as_f64()?;
+                Some(bitrate * duration / 8.0)
+            })
+            .unwrap_or(0.0);
+
+        let filesize_mb = (filesize_bytes / (1024.0 * 1024.0)).round();
+
         let video_info = json!({
             "title": video_info["title"],
             "author": video_info["uploader"],
@@ -28,17 +45,18 @@ pub async fn fetch_video(url: &str) -> Result<String, String> {
             "thumbnail_url": video_info["thumbnail"],
             "video_id": video_info["id"],
             "channel_id": video_info["channel_id"],
+            "filesize_mb": filesize_mb,
         });
 
         println!("Successfully retrieved video information");
+        println!("Filesize: {} MB", filesize_mb);
         Ok(serde_json::to_string(&video_info).unwrap())
     } else {
         let error = String::from_utf8_lossy(&output.stderr);
         Err(format!("Error fetching video information: {}", error))
     }
 }
-
-// download video > dnl path
+// download video
 pub async fn download_video(url: &str) -> Result<String, String> {
     println!("Attempting to download video from URL: {}", url);
 
@@ -64,7 +82,6 @@ pub async fn download_video(url: &str) -> Result<String, String> {
         Err(format!("Error downloading video: {}", error))
     }
 }
-
 // download audio
 pub async fn download_audio(url: &str) -> Result<String, String> {
     println!("Attempting to download audio from URL: {}", url);

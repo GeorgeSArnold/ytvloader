@@ -1,28 +1,42 @@
 const { invoke } = window.__TAURI__.tauri;
 
+// fetch
 let fetchInputEl;
 let fetchMsgEl;
+// downlaod
 let downloadMsgEl;
 let downloadAudioMsgEl;
-
 // clear
 let clearButtonEl;
-
 // progress
 let fetchProgressEl;
 let progressBarEl;
 
+// check url
+function isValidYouTubeUrl(url) {
+  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+  return youtubeRegex.test(url);
+}
+// fetch > api
 async function fetchVideo() {
   console.log("Fetch video function called");
   
+  const inputUrl = fetchInputEl.value.trim();
+
   // Check if the input is empty
-  if (!fetchInputEl.value.trim()) {
-    fetchMsgEl.textContent = "Please enter a valid URL";
-    return; // Exit the function early
+  if (!inputUrl) {
+    fetchMsgEl.textContent = "Please enter a URL.";
+    return;
+  }
+
+  // Validate if it's a YouTube URL
+  if (!isValidYouTubeUrl(inputUrl)) {
+    fetchMsgEl.textContent = "Please enter a valid YouTube URL.";
+    return;
   }
 
   try {
-    fetchMsgEl.textContent = "Fetching...";
+    fetchMsgEl.textContent = "Fetching video...";
     updateProgressBar(true);
 
     let progress = 0;
@@ -32,14 +46,19 @@ async function fetchVideo() {
       updateProgressBar(true, progress);
     }, 200);
 
-    const result = await invoke("fetch", { url: fetchInputEl.value });
+    const result = await invoke("fetch", { url: inputUrl });
     const videoInfo = JSON.parse(result);
+    
+    if (!videoInfo.title) {
+      throw new Error("No video information found.");
+    }
     
     let infoHtml = `
       <table>
         <tr><th>Title</th><td>${videoInfo.title}</td></tr>
         <tr><th>Author</th><td>${videoInfo.author}</td></tr>
         <tr><th>Length</th><td>${(videoInfo.length_seconds / 60).toFixed(2)} min</td></tr>
+        <tr><th>File Size</th><td>${videoInfo.filesize_mb || 'Not available'} MB</td></tr>
       </table>
     `;
     
@@ -52,11 +71,22 @@ async function fetchVideo() {
 
   } catch (error) {
     console.error("Error fetching video:", error);
-    fetchMsgEl.textContent = `Error: ${error}`;
+    
+    // Display a user-friendly error message
+    let errorMessage;
+    if (error.message.includes("No video information found")) {
+      errorMessage = "The video information could not be retrieved. Please check the URL.";
+    } else if (error.message.includes("video unavailable")) {
+      errorMessage = "The video is unavailable. Please check the URL and try again.";
+    } else {
+      errorMessage = "An error occurred while fetching the video. Please try again later.";
+    }
+
+    fetchMsgEl.textContent = errorMessage;
     updateProgressBar(false);
   }
 }
-
+// video dl
 async function downloadVideo() {
   console.log("download video function called");
   
@@ -81,7 +111,7 @@ async function downloadVideo() {
     updateProgressBar(false);
   }
 }
-
+// audio dl
 async function downloadAudio() {
   console.log("download audio function called");
   
@@ -106,7 +136,7 @@ async function downloadAudio() {
     updateProgressBar(false);
   }
 }
-
+// dom
 window.addEventListener("DOMContentLoaded", () => {
   fetchInputEl = document.querySelector("#fetch-input");
   fetchMsgEl = document.querySelector("#fetch-msg");
@@ -132,13 +162,13 @@ window.addEventListener("DOMContentLoaded", () => {
     clearAll();
   });
 });
-
+// clear all
 function clearAll() {
   fetchInputEl.value = '';
   fetchMsgEl.innerHTML = '';
   updateProgressBar(false);
 }
-
+// progressbar
 function updateProgressBar(show, progress = 0) {
   if (show) {
     progressBarEl.style.width = `${progress}%`;
