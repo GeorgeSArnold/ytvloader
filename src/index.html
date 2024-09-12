@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YTV loader</title>
+</head>
+
+<body>
+  <!-- header -->
+  <div class="header-section">
+    <div class="header-left">
+      <span>Hallo Welt</span>
+    </div>
+  </div>
+
+  <!-- main content -->
+  <div class="main-content">
+    <div class="container">
+      <div class="headline">
+        <div class="headline-icons">
+          <!-- headline -->
+        </div>
+        <div class="yt-loader-headline">
+          <img src="./assets/dlp.png" alt="dlp" id="dlp-logo">
+          <img src="./assets/youtube.png" alt="YouTube">
+          <h1>YTV loader</h1>
+        </div>
+      </div>
+
+      <!-- output massage -->
+      <p id="loader-msg"></p>
+
+      <!-- fetch -->
+      <div class="fetch-section">
+        <form class="row" id="fetch-form">
+          <input id="fetch-input" placeholder="enter youtube URL..." />
+          <button id="fetch-button" type="submit">fetch</button>
+          <button id="clear-button" type="button">clear</button>
+        </form>
+      </div>
+
+      <!-- download -->
+      <div class="download-section">
+        <div class="download-column">
+          <button id="download-button">
+            <span>download video
+              <img src="./assets/video.png" id="button-logo">
+            </span>
+          </button>
+          <!-- <p id="download-msg" class="download-message"></p> -->
+        </div>
+        <div class="download-column">
+          <button id="download-audio-button"><span>
+              download audio
+              <img src="./assets/music.png" id="button-logo">
+            </span></button>
+          <!-- <div id="download-audio-msg" class="download-message"></div> -->
+        </div>
+      </div>
+      <!-- output message -->
+      <p id="fetch-msg" class="fetch-result"></p>
+
+      <!-- <div id="fetch-progress" class="progress-bar"></div> -->
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- footer-->
+  <div class="footer-section">
+    <div class="footer-left">
+      <img src="./assets/gs.png" alt="GS Logo">
+      <span>GeorgeSArnold | build sep.2024 | v.0.1.0</span>
+    </div>
+    <div class="footer-right">
+      <img src="./assets/tauri.svg" alt="Tauri">
+      <img src="./assets/nodejs.svg" alt="nodejs">
+      <img src="./assets/javascript.svg" alt="JavaScript">
+      <img src="./assets/rust-svgrepo-com.svg" alt="Rust">
+      <img src="./assets/python.png" alt="Python">
+    </div>
+  </div>
+
+  <!-- script -->
+  <script type="module" src="/main.js" defer></script>
+</body>
+
+</html>
