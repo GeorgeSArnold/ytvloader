@@ -16,9 +16,42 @@ let progressBarEl;
 
 // titlebar
 let titlebarEl;
-let closeBtn
+let closeBtn;
+let refreshBtn;
 
+// titlebar items
+// close
+async function closeApp() {
+  console.log("Closing app...");
+  try {
+    await appWindow.close();
+  } catch (error) {
+    console.error("Error closing app:", error);
+  }
+}
+// reload 
+async function refreshWebview() {
+  try {
+    await invoke('refresh_webview');
+  } catch (error) {
+    console.error('Fehler beim Neuladen des Webviews:', error);
+  }
+}
 
+// JS > RUST debug 
+function logToRustConsole(message, level = 'log') {
+  invoke('rust_console', { message, level })
+    .catch(error => console.error('Fehler beim Senden an Rust-Konsole:', error));
+}
+// override all JS debug > RUST
+console.log = (...args) => {
+  const message = args.join(' ');
+  logToRustConsole(message, 'log');
+};
+console.error = (...args) => {
+  const message = args.join(' ');
+  logToRustConsole(message, 'error');
+};
 
 // check url
 function isValidYouTubeUrl(url) {
@@ -28,7 +61,7 @@ function isValidYouTubeUrl(url) {
 // fetch > api
 async function fetchVideo() {
   console.log("Fetch video function called");
-  
+
   const inputUrl = fetchInputEl.value.trim();
 
   // Check if the input is empty
@@ -56,11 +89,11 @@ async function fetchVideo() {
 
     const result = await invoke("fetch", { url: inputUrl });
     const videoInfo = JSON.parse(result);
-    
+
     if (!videoInfo.title) {
       throw new Error("No video information found.");
     }
-    
+
     let infoHtml = `
       <table>
         <tr><th>Title</th><td>${videoInfo.title}</td></tr>
@@ -69,7 +102,7 @@ async function fetchVideo() {
         <tr><th>File Size</th><td>${videoInfo.filesize_mb || 'Not available'} MB</td></tr>
       </table>
     `;
-    
+
     fetchMsgEl.innerHTML = infoHtml;
     console.log("Video fetch successful");
 
@@ -79,7 +112,7 @@ async function fetchVideo() {
 
   } catch (error) {
     console.error("Error fetching video:", error);
-    
+
     // Display a user-friendly error message
     let errorMessage;
     if (error.message.includes("No video information found")) {
@@ -97,7 +130,7 @@ async function fetchVideo() {
 // video dl
 async function downloadVideo() {
   console.log("download video function called");
-  
+
   if (!fetchInputEl.value.trim()) {
     fetchMsgEl.textContent = "Please enter a valid URL first";
     return;
@@ -122,7 +155,7 @@ async function downloadVideo() {
 // audio dl
 async function downloadAudio() {
   console.log("download audio function called");
-  
+
   if (!fetchInputEl.value.trim()) {
     fetchMsgEl.textContent = "Please enter a valid URL first";
     return;
@@ -144,27 +177,28 @@ async function downloadAudio() {
     updateProgressBar(false);
   }
 }
-// dom
+// DOM
 window.addEventListener("DOMContentLoaded", () => {
+  // el fields
+  titlebarEl = document.querySelector("#titlebar");
   fetchInputEl = document.querySelector("#fetch-input");
   fetchMsgEl = document.querySelector("#fetch-msg");
   progressBarEl = document.querySelector("#progress-bar");
-  titlebarEl = document.querySelector("#titlebar");
 
+  // titlebar btn fields
   closeBtn = document.querySelector(".close-btn");
-  // todo: 
-  //- function refresh > reload app
+  refreshBtn = document.querySelector(".refresh-btn");
 
-
-
-  
+  // drag titlebar
   titlebarEl.addEventListener("mousedown", (e) => {
     appWindow.startDragging();
   });
 
-    closeBtn.addEventListener("click", closeApp);
+  // title btn events
+  closeBtn.addEventListener("click", closeApp);
+  refreshBtn.addEventListener("click", refreshWebview);
 
-
+  // main btn events
   document.querySelector("#fetch-form").addEventListener("submit", (e) => {
     e.preventDefault();
     fetchVideo();
@@ -185,8 +219,10 @@ window.addEventListener("DOMContentLoaded", () => {
     clearAll();
   });
 });
-// clear all
+
+// clear all fields
 function clearAll() {
+  console.log("Clear All finction called");
   fetchInputEl.value = '';
   fetchMsgEl.innerHTML = '';
   updateProgressBar(false);
@@ -203,16 +239,5 @@ function updateProgressBar(show, progress = 0) {
       progressBarEl.style.display = 'none';
       progressBarEl.classList.remove('fade-out');
     }, 500);
-  }
-}
-
-
-// Close app function
-async function closeApp() {
-  console.log("Closing app...");
-  try {
-    await appWindow.close();
-  } catch (error) {
-    console.error("Error closing app:", error);
   }
 }

@@ -4,6 +4,7 @@ use url::Url;
 use serde_json::json;
 use dirs;
 
+
 // fetch 
 pub async fn fetch_video(url: &str) -> Result<String, String> {
     println!("Attempting to fetch video info from URL: {}", url);
@@ -109,5 +110,16 @@ pub async fn download_audio(url: &str) -> Result<String, String> {
     } else {
         let error = String::from_utf8_lossy(&output.stderr);
         Err(format!("Error downloading audio: {}", error))
+    }
+}
+
+// log js > rust
+pub fn log_to_console(message: &str, level: &str) {
+    match level {
+        "log" => println!("JS Log: {}", message),
+        "error" => eprintln!("JS Error: {}", message),
+        "warn" => println!("JS Warning: {}", message),
+        "info" => println!("JS Info: {}", message),
+        _ => println!("JS: {}", message),
     }
 }
