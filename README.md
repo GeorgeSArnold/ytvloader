@@ -41,18 +41,18 @@ cd ytvloader
 - Download and install the latest version for your operating system
 - Verify installation with: `python --version`
 
-5. **Install yt-dlp**
-pip install yt-dlp
+5. **Install yt-dlp** 
+`pip install yt-dlp`
 
-6. **Install project dependencies**
-npm install
+6. **Install project dependencies** 
+`npm install`
 
 ## Usage
 To run the application in development mode:
-npm run tauri dev
+`npm run tauri dev`
 
 To build the application for production:
-npm run tauri build
+`npm run tauri build`
 
 ## Contributing
 Contributions to YTVLoader are welcome. Please feel free to submit a Pull Request.
@@ -62,9 +62,6 @@ Contributions to YTVLoader are welcome. Please feel free to submit a Pull Reques
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) for providing the core functionality for YouTube video downloads
