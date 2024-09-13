@@ -9,10 +9,15 @@
 </head>
 
 <body>
-  <!-- header -->
-  <div class="header-section">
-    <div class="header-left">
-      <span>Hallo Welt</span>
+  <!-- titlebar -->
+  <div id="titlebar" class="titlebar-section">
+    <div class="titlebar-button-section">
+      <button  class="close-btn">
+        <img src="./assets/close.png" class="button-icon">
+      </button>
+      <button id="btn-refresh" class="refresh-btn">
+        <img src="./assets/refresh.png" class="button-icon">
+      </button>
     </div>
   </div>
 
@@ -21,7 +26,6 @@
     <div class="container">
       <div class="headline">
         <div class="yt-loader-headline">
-          <img src="./assets/dlp.png" alt="dlp" id="dlp-logo">
           <img src="./assets/youtube.png" alt="YouTube">
           <h1>YTvloader</h1>
         </div>
@@ -34,8 +38,8 @@
       <div class="fetch-section">
         <form class="row" id="fetch-form">
           <input id="fetch-input" placeholder="enter youtube URL..." />
-          <button id="fetch-button" type="submit">fetch</button>
           <button id="clear-button" type="button">clear</button>
+          <button id="fetch-button" type="submit">fetch</button>
         </form>
       </div>
 
@@ -77,6 +81,7 @@
       <img src="./assets/javascript.svg" alt="JavaScript">
       <img src="./assets/rust-svgrepo-com.svg" alt="Rust">
       <img src="./assets/python.png" alt="Python">
+      <img src="./assets/dlp.png" alt="dlp" id="dlp-logo">
     </div>
   </div>
 

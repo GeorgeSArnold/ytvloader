@@ -1,5 +1,7 @@
 const { invoke } = window.__TAURI__.tauri;
 
+const { appWindow } = window.__TAURI__.window;
+
 // fetch
 let fetchInputEl;
 let fetchMsgEl;
@@ -7,10 +9,16 @@ let fetchMsgEl;
 let downloadMsgEl;
 let downloadAudioMsgEl;
 // clear
-let clearButtonEl;
+// let clearButtonEl;
 // progress
 let fetchProgressEl;
 let progressBarEl;
+
+// titlebar
+let titlebarEl;
+let closeBtn
+
+
 
 // check url
 function isValidYouTubeUrl(url) {
@@ -141,6 +149,21 @@ window.addEventListener("DOMContentLoaded", () => {
   fetchInputEl = document.querySelector("#fetch-input");
   fetchMsgEl = document.querySelector("#fetch-msg");
   progressBarEl = document.querySelector("#progress-bar");
+  titlebarEl = document.querySelector("#titlebar");
+
+  closeBtn = document.querySelector(".close-btn");
+  // todo: 
+  //- function refresh > reload app
+
+
+
+  
+  titlebarEl.addEventListener("mousedown", (e) => {
+    appWindow.startDragging();
+  });
+
+    closeBtn.addEventListener("click", closeApp);
+
 
   document.querySelector("#fetch-form").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -180,5 +203,16 @@ function updateProgressBar(show, progress = 0) {
       progressBarEl.style.display = 'none';
       progressBarEl.classList.remove('fade-out');
     }, 500);
+  }
+}
+
+
+// Close app function
+async function closeApp() {
+  console.log("Closing app...");
+  try {
+    await appWindow.close();
+  } catch (error) {
+    console.error("Error closing app:", error);
   }
 }
